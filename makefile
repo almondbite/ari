@@ -1,2 +1,2 @@
 all:
-	gcc ari.c init.c bitboards.c hashkeys.c -o ari
+	gcc ari.c init.c bitboards.c hashkeys.c board.c -o ari

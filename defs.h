@@ -26,6 +26,8 @@ typedef unsigned long long U64;
 
 #define MAXGAMEMOVES 2048
 
+#define START_FEN "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+
 enum {EMPTY, wP, wN, wB, wR, wQ, wK, bP, bN, bB, bR, bQ, bK}; // Chess pieces
 enum {FILE_A, FILE_B, FILE_C, FILE_D, FILE_E, FILE_F, FILE_G, FILE_H, FILE_NONE}; // Files
 enum {RANK_1, RANK_2, RANK_3, RANK_4, RANK_5, RANK_6, RANK_7, RANK_8, RANK_NONE}; // Ranks
@@ -40,7 +42,7 @@ enum {
     A5 = 61, B5, C5, D5, E5, F5, G5, H5,
     A6 = 71, B6, C6, D6, E6, F6, G6, H6,
     A7 = 81, B7, C7, D7, E7, F7, G7, H7,
-    A8 = 91, B8, C8, D8, E8, F8, G8, H8, NO_SQ
+    A8 = 91, B8, C8, D8, E8, F8, G8, H8, NO_SQ, OFFBOARD
 };
 
 enum {FALSE, TRUE};
@@ -89,9 +91,9 @@ typedef struct {
 } S_BOARD; // Board structure
 
 /* MACROS */
-#define FR2SQ(f,r) ( ( 21 + (f) ) + ( (r) * 10 ) ) // Original
-//#define FR2SQ(f,r) ( ( 21 + ( (FILE_H - (f)) ) ) + ( (r) * 10 ) ) // Adjusted to map files in reverse order
-#define SQ64(sq120) Sq120ToSq64[sq120]
+#define FR2SQ(f,r) ( ( 21 + (f) ) + ( (r) * 10 ) ) // Original //#define FR2SQ(f,r) ( ( 21 + ( (FILE_H - (f)) ) ) + ( (r) * 10 ) ) // Adjusted to map files in reverse order
+#define SQ64(sq120) (Sq120ToSq64[(sq120)])
+#define SQ120(sq64) (Sq64ToSq120[(sq64)])
 #define POP(b) PopBit(b)
 #define CNT(b) CountBits(b)
 #define CLRBIT(bb, sq) ( (bb) &= ClearMask[(sq)])
@@ -102,9 +104,9 @@ extern int Sq120ToSq64[BRD_SQ_NUM];
 extern int Sq64ToSq120[64];
 extern U64 SetMask[64];
 extern U64 ClearMask[64];
-extern PieceKeys[13][120];
-extern SideKey;
-extern CastleKeys[16];
+extern U64 PieceKeys[13][120];
+extern U64 SideKey;
+extern U64 CastleKeys[16];
 
 /* FUNCTIONS */
 
@@ -115,5 +117,11 @@ extern void AllInit();
 extern void PrintBitBoard(U64 bb);
 extern int PopBit(U64 *bb);
 extern int CountBits(U64 b);
+
+// hashkeys.c
+extern U64 GeneratePosKey(const S_BOARD *pos);
+
+// board.c
+extern void ResetBoard(S_BOARD *pos);
 
 #endif
